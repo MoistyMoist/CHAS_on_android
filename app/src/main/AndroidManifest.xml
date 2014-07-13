@@ -14,17 +14,12 @@
         <activity
             android:name=".activity.BaseActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
-
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
         <activity
-            android:name=".layout.LayoutBaseHeader"
-            android:label="@string/title_activity_layout_base_header"
-            android:theme="@android:style/Theme.Black.NoTitleBar"/>
-        <activity
             android:name=".activity.SplashScreenActivity"
-            android:label="@string/title_activity_splash_screen"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
+            android:label="@string/title_activity_my"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

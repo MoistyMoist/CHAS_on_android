@@ -1,13 +1,97 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:id="@+id/layoutMain"
+    android:animateLayoutChanges="true"
+tools:context="com.sla.codurs.chas.activity">
+
+<FrameLayout
+    android:id="@+id/main_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BaseActivity">
+    android:orientation="vertical">
 
     <com.esri.android.map.MapView
         android:id="@+id/map"
+        android:layout_gravity="bottom"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"/>
+
+
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp">
+
+        <ImageButton
+            android:id="@+id/gpsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/resultFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:background="#CCCCCC"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        android:animateLayoutChanges="true">
+        <ListView
+            android:animateLayoutChanges="true"
+            android:layout_below="@+id/searchLayout"
+            android:id="@+id/addressResultList"
+            android:background="#FFFFFF"
+            android:layout_gravity="top"
+            android:layout_marginTop="70dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+        </ListView>
+
+    </FrameLayout>
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <LinearLayout
+            android:id="@+id/searchLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+            <EditText
+                android:id="@+id/searchQuery"
+                android:layout_width="wrap_content"
+                android:editable="true"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.9"/>
+
+            <Button
+                android:onClick="startSearch"
+                android:id="@+id/searchBtn"
+                android:clickable="true"
+                android:text="Go"
+                android:layout_width="wrap_content"
+                android:layout_weight="0.1"
+                android:layout_height="fill_parent" />
 
 
-</RelativeLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+</FrameLayout>
+
+
+</FrameLayout>
+

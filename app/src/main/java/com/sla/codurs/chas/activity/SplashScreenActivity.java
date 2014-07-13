@@ -1,25 +1,27 @@
 package com.sla.codurs.chas.activity;
 
-import java.util.Locale;
-
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import com.sla.codurs.chas.R;
+import android.widget.Toast;
 
-public class SplashScreenActivity extends Activity {
+import com.sla.codurs.chas.R;
+import com.sla.codurs.chas.fragments.FragmentChasPager;
+import com.sla.codurs.chas.fragments.FragmentCodursPager;
+import com.sla.codurs.chas.fragments.FragmentOneMapPager;
+import com.sla.codurs.chas.fragments.FragmentSLAPager;
+import com.sla.codurs.chas.HTTP.GetChasRequest;
+import com.sla.codurs.chas.utils.PageAdapter;
+import com.sla.codurs.chas.utils.StaticObjects;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class SplashScreenActivity extends Activity implements FragmentChasPager.OnFragmentInteractionListener,FragmentSLAPager.OnFragmentInteractionListener,FragmentOneMapPager.OnFragmentInteractionListener,FragmentCodursPager.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -29,7 +31,9 @@ public class SplashScreenActivity extends Activity {
      * may be best to switch to a
      * {@link android.support.v13.app.FragmentStatePagerAdapter}.
      */
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    PageAdapter mSectionsPagerAdapter;
+    Timer timer;
+    int page = 0;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -45,105 +49,82 @@ public class SplashScreenActivity extends Activity {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new PageAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        //mViewPager = (ViewPager) findViewById(R.id.pager);
-        //mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        //AUTO PAGE
+        timer = new Timer(); // At this line a new Thread will be created
+        timer.scheduleAtFixedRate(new AutoPage(), 0,  1500);
+
+
+        GetChasRequest searchRequest= new GetChasRequest();
+        new BackgroundTask().execute(searchRequest,searchRequest);
 
     }
-
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.splash_screen, menu);
-        return true;
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    private class BackgroundTask extends AsyncTask<Runnable, Integer, Long> {
 
-    
+        @Override
+        protected void onPostExecute(Long result) {
+            //
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
         }
 
         @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+        protected void onPreExecute() {
+            Toast.makeText(getBaseContext(), "Loading...", Toast.LENGTH_LONG).show();
+            super.onPreExecute();
         }
 
         @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
+        protected Long doInBackground(Runnable... task) {
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
+                task[0].run();
             return null;
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
+    class AutoPage extends TimerTask {
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_splash_screen, container, false);
-            return rootView;
+        public void run() {
+
+            // As the TimerTask run on a seprate thread from UI thread we have
+            // to call runOnUiThread to do work on UI thread.
+            runOnUiThread(new Runnable() {
+                public void run() {
+
+                    if (page > 3) { // In my case the number of pages are 5
+                        timer.cancel();
+                        if(StaticObjects.chases==null){
+                            page=0;
+                            run();
+                        }
+                        else
+                        {
+                            Intent i = new Intent(SplashScreenActivity.this, BaseActivity.class);
+                            startActivity(i);
+                        }
+
+                        // Showing a toast for just testing purpose
+                        Toast.makeText(getApplicationContext(), "Timer stoped",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        mViewPager.setCurrentItem(page++);
+                    }
+                }
+            });
+
         }
     }
+
 
 }

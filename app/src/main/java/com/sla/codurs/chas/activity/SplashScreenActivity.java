@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.sla.codurs.chas.R;
@@ -74,7 +75,7 @@ public class SplashScreenActivity extends Activity implements FragmentChasPager.
 
         @Override
         protected void onPostExecute(Long result) {
-            //
+
 
         }
 
@@ -103,18 +104,17 @@ public class SplashScreenActivity extends Activity implements FragmentChasPager.
                 public void run() {
 
                     if (page > 3) { // In my case the number of pages are 5
-                        timer.cancel();
                         if(StaticObjects.chases==null){
                             page=0;
-                            run();
+                            Log.i("DATA","still null");
                         }
                         else
                         {
+                            timer.cancel();
                             Intent i = new Intent(SplashScreenActivity.this, BaseActivity.class);
                             startActivity(i);
                         }
 
-                        // Showing a toast for just testing purpose
                         Toast.makeText(getApplicationContext(), "Timer stoped",
                                 Toast.LENGTH_LONG).show();
                     } else {

@@ -72,7 +72,7 @@ public class JASONExtractor {
         Log.i("raw1", RawData.toString());
         ArrayList<Chas> returningData= new ArrayList<Chas>();
 
-        if(RawData.length()<2){
+        if(RawData.length()>2){
             for(int i=2;i<RawData.length();i++){
                 Chas chas= new Chas();
                 JSONObject row=RawData.getJSONObject(i);

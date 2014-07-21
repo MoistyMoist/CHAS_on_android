@@ -221,8 +221,8 @@ public class BaseActivity extends Activity {
 
         @Override
         protected void onPreExecute() {
-            dialog = ProgressDialog.show(getBaseContext(), "",
-                    "Loading. Please wait...", true);
+//            dialog = ProgressDialog.show(getBaseContext(), "",
+//                    "Loading. Please wait...", true);
             //Toast.makeText(getBaseContext(), "Loading...", Toast.LENGTH_SHORT).show();
             super.onPreExecute();
         }
@@ -244,7 +244,7 @@ public class BaseActivity extends Activity {
 
         @Override
         protected void onPostExecute(Long result) {
-            dialog.dismiss();
+//            dialog.dismiss();
             if(StaticObjects.addressEnd==false)
             {
                 addressSet++;
@@ -271,8 +271,8 @@ public class BaseActivity extends Activity {
 
         @Override
         protected void onPreExecute() {
-            final ProgressDialog progDailog = ProgressDialog.show(getBaseContext(), "Progress_bar or give anything you want",
-                    "Give message like ....please wait....", true);
+//            final ProgressDialog progDailog = ProgressDialog.show(getBaseContext(), "Progress_bar or give anything you want",
+//                    "Give message like ....please wait....", true);
             //Toast.makeText(getBaseContext(), "Loading...", Toast.LENGTH_LONG).show();
             super.onPreExecute();
         }

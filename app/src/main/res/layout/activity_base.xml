@@ -29,6 +29,8 @@ tools:context="com.sla.codurs.chas.activity">
 
         <ImageButton
             android:id="@+id/gpsBtn"
+            android:onClick="getChasAroundGPS"
+            android:background="@drawable/gps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </FrameLayout>
@@ -42,11 +44,8 @@ tools:context="com.sla.codurs.chas.activity">
         android:animateLayoutChanges="true">
         <ListView
             android:animateLayoutChanges="true"
-            android:layout_below="@+id/searchLayout"
             android:id="@+id/addressResultList"
-            android:background="#FFFFFF"
             android:layout_gravity="top"
-            android:layout_marginTop="70dp"
             android:paddingTop="10dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
@@ -58,35 +57,7 @@ tools:context="com.sla.codurs.chas.activity">
     </FrameLayout>
     <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
-
-        <LinearLayout
-            android:id="@+id/searchLayout"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:weightSum="1">
-            <EditText
-                android:id="@+id/searchQuery"
-                android:layout_width="wrap_content"
-                android:editable="true"
-                android:layout_height="fill_parent"
-                android:layout_weight="0.9"/>
-
-            <Button
-                android:onClick="startSearch"
-                android:id="@+id/searchBtn"
-                android:clickable="true"
-                android:text="Go"
-                android:layout_width="wrap_content"
-                android:layout_weight="0.1"
-                android:layout_height="fill_parent" />
-
-
-        </LinearLayout>
-
+        android:layout_height="50dp">
     </FrameLayout>
 
 

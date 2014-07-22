@@ -2,8 +2,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".BaseActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings" />
+        android:id="@+id/menu_overflow"
+        android:title=""
+        android:icon="@drawable/dots"
+        android:orderInCategory="11111"
+        android:showAsAction="always">
+        <menu>
+            <group android:checkableBehavior="all">
+            <item
+                android:id="@+id/chas_centers"
+                android:orderInCategory="100"
+                android:showAsAction="never"
+                android:title="@string/chas" />
+            <item
+                android:id="@+id/breast_screening_centres"
+                android:orderInCategory="100"
+                android:showAsAction="never"
+                android:title="@string/breast_screening" />
+            <item
+                android:id="@+id/quit_centres"
+                android:orderInCategory="100"
+                android:showAsAction="never"
+                android:title="@string/quit_centers" />
+            <item
+                android:id="@+id/cervical_screening_centre"
+                android:orderInCategory="100"
+                android:showAsAction="never"
+                android:title="@string/cervical_screening" />
+            <item
+                android:id="@+id/retail_pharmacy"
+                android:orderInCategory="100"
+                android:showAsAction="never"
+                android:title="@string/retail_pharmacy" />
+            </group>
+        </menu>
+    </item>
 </menu>

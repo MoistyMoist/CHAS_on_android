@@ -48,7 +48,7 @@ public class GetAddressSearchRequest implements Runnable{
             response = httpclient.execute(httpget);
 
             //PRINT OUT THE RESPONSE
-            Log.i("RETRIEVE Addreess RESPONSE STATUS:", response.getStatusLine().toString());
+            Log.i("RETRIEVE Address RESPONSE STATUS:", response.getStatusLine().toString());
             JSONExtractor extractor= new JSONExtractor();
             extractor.ExtractAddressSearchResult(response, BaseActivity.addressEnd);
 

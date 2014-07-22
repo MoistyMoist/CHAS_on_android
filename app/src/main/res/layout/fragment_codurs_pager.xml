@@ -16,7 +16,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:background="@drawable/codurs_logo"/>
+        android:background="@drawable/chas_logo"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

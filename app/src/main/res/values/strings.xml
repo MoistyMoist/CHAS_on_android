@@ -5,12 +5,18 @@
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
-    <string name="app_name">Android_CHAS_Clinic</string>
+    <string name="app_name">CHAS</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_layout_base_header">LayoutBaseHeader</string>
     <string name="title_activity_my">MyActivity</string>
     <string name="title_activity_address_search">AddressSearchActivity</string>
+    <string name="search">Search</string>
+    <string name="chas">CHAS</string>
+    <string name="breast_screening">Breast Screening</string>
+    <string name="quit_centers">Quit Centres</string>
+    <string name="cervical_screening">Cervical Screening</string>
+    <string name="retail_pharmacy">Retail Pharmacy</string>
 
 </resources>

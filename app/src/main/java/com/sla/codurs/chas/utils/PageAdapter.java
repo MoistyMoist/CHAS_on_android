@@ -7,7 +7,6 @@ import android.support.v13.app.FragmentPagerAdapter;
 import com.sla.codurs.chas.fragments.FragmentChasPager;
 import com.sla.codurs.chas.fragments.FragmentOneMapPager;
 import com.sla.codurs.chas.fragments.FragmentSLAPager;
-import com.sla.codurs.chas.fragments.FragmentCodursPager;
 
 /**
  * Created by Moistyburger on 11/7/14.
@@ -26,13 +25,14 @@ public class PageAdapter extends FragmentPagerAdapter {
             return FragmentOneMapPager.newInstance("OneMap", "OneMap");
         if (position == 2)
             return FragmentSLAPager.newInstance("SLA", "SLA");
+
         else
-            return FragmentCodursPager.newInstance("CODURS", "CODURS");
+            return null;
     }
 
 
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 }

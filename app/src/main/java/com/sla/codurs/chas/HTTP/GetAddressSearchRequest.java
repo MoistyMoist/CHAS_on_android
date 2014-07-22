@@ -3,8 +3,8 @@ package com.sla.codurs.chas.HTTP;
 import android.net.Uri;
 import android.util.Log;
 
-import com.sla.codurs.chas.utils.JASONExtractor;
-import com.sla.codurs.chas.utils.StaticObjects;
+import com.sla.codurs.chas.activity.BaseActivity;
+import com.sla.codurs.chas.utils.JSONExtractor;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -49,8 +49,8 @@ public class GetAddressSearchRequest implements Runnable{
 
             //PRINT OUT THE RESPONSE
             Log.i("RETRIEVE Addreess RESPONSE STATUS:", response.getStatusLine().toString());
-            JASONExtractor extractor= new JASONExtractor();
-            extractor.ExtractAddressSearchResult(response, StaticObjects.addressEnd);
+            JSONExtractor extractor= new JSONExtractor();
+            extractor.ExtractAddressSearchResult(response, BaseActivity.addressEnd);
 
 
         } catch (ClientProtocolException e) {

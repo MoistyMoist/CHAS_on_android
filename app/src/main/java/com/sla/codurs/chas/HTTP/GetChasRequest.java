@@ -2,7 +2,8 @@ package com.sla.codurs.chas.HTTP;
 
 import android.net.Uri;
 import android.util.Log;
-import com.sla.codurs.chas.utils.JASONExtractor;
+import com.sla.codurs.chas.utils.JSONExtractor;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -61,7 +62,7 @@ public class GetChasRequest implements Runnable{
 
             //PRINT OUT THE RESPONSE
             Log.i("RETRIEVE CHAS RESPONSE STATUS:",response.getStatusLine().toString());
-            JASONExtractor extractor= new JASONExtractor();
+            JSONExtractor extractor= new JSONExtractor();
             extractor.ExtractChasSearchResult(response);
 
 

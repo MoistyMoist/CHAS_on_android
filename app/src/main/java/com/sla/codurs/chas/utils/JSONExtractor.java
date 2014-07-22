@@ -2,6 +2,7 @@ package com.sla.codurs.chas.utils;
 
 import android.util.Log;
 
+import com.sla.codurs.chas.activity.BaseActivity;
 import com.sla.codurs.chas.model.Address;
 import com.sla.codurs.chas.model.Chas;
 
@@ -20,9 +21,9 @@ import java.util.ArrayList;
 /**
  * Created by COUDRS LLP on 9/7/14.
  */
-public class JASONExtractor {
+public class JSONExtractor {
 
-    //THIS METHODS EXRTRACTS THE ADDRESS SEARCH RESULT AND FORMATS IT
+    //THIS METHOD EXRTRACTS THE ADDRESS SEARCH RESULT AND FORMATS IT
     public void ExtractAddressSearchResult(HttpResponse data,boolean continueStream)throws IllegalStateException, IOException, JSONException {
         HttpEntity entity = data.getEntity();
         InputStream instream = entity.getContent();
@@ -32,7 +33,7 @@ public class JASONExtractor {
        // Log.i("Raw",""+json.toString());
         JSONArray RawData= json.getJSONArray("SearchResults");
         Log.i("count", RawData.length()+"");
-        ArrayList<Address> returningData= StaticObjects.addresses;
+        ArrayList<Address> returningData= BaseActivity.addresses;
 
         if(returningData==null||returningData.size()==0)
             returningData= new ArrayList<Address>();
@@ -50,17 +51,17 @@ public class JASONExtractor {
 
                 returningData.add(address);
             }
-            StaticObjects.addresses=returningData;
+            BaseActivity.addresses=returningData;
         }
         else{
-            //StaticObjects.addresses=null;
-            StaticObjects.addressEnd=true;
+            //BaseActivity.addresses=null;
+            BaseActivity.addressEnd=true;
         }
 
 
     }
 
-    //THIS METHODS EXRTRACTS THE CHAS SEARCH RESULT AND FORMATS IT
+    //THIS METHOD EXRTRACTS THE CHAS SEARCH RESULT AND FORMATS IT
     public void ExtractChasSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
 
         HttpEntity entity = data.getEntity();
@@ -89,14 +90,40 @@ public class JASONExtractor {
 
                 returningData.add(chas);
             }
-            StaticObjects.chases=returningData;
+            BaseActivity.chases=returningData;
         }
         else{
-            StaticObjects.chases=null;
+            BaseActivity.chases=null;
         }
 
 
     }
+
+    //THIS METHOD EXRTRACTS THE BREAST SEARCH RESULT AND FORMATS IT
+    public void ExtractBreastSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+
+    }
+    //THIS METHOD EXRTRACTS THE CERVICAL SEARCH RESULT AND FORMATS IT
+    public void ExtractCervicalSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+
+    }
+
+    //THIS METHOD EXRTRACTS THE QUIT SEARCH RESULT AND FORMATS IT
+    public void ExtractQuitSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+
+    }
+
+    //THIS METHOD EXRTRACTS THE RETAIL SEARCH RESULT AND FORMATS IT
+    public void ExtractRetailSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+
+    }
+
+
+
+
+
+
+
 
 
     //THIS METHOD CONVERTS THE HTTP RESPONSE TO JSON.

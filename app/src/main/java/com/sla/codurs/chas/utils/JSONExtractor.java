@@ -116,7 +116,7 @@ public class JSONExtractor {
 
         if(RawData.length()>2){
             for(int i=2;i<RawData.length();i++){
-                Chas chas= new Chas();
+                BreastScreeningCentre breast= new BreastScreeningCentre();
                 JSONObject row=RawData.getJSONObject(i);
 
                 Log.i("raw", row.toString());
@@ -124,12 +124,12 @@ public class JSONExtractor {
                 String[] separated = row.getString("XY").split(",");
 
 
-                chas.setTitle(row.getString("NAME"));
-                chas.setIconURL(row.getString("ICON_NAME"));
-                chas.setX(Double.parseDouble(separated[0]));
-                chas.setY(Double.parseDouble(separated[1]));
+                breast.setName(row.getString("NAME"));
+                breast.setIconURL(row.getString("ICON_NAME"));
+                breast.setX(Double.parseDouble(separated[0]));
+                breast.setY(Double.parseDouble(separated[1]));
 
-                returningData.add(chas);
+                returningData.add(breast);
             }
             BaseActivity.brestCentres=returningData;
         }
@@ -137,6 +137,7 @@ public class JSONExtractor {
             BaseActivity.brestCentres=null;
         }
     }
+
     //THIS METHOD EXRTRACTS THE CERVICAL SEARCH RESULT AND FORMATS IT
     public void ExtractCervicalSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
         HttpEntity entity = data.getEntity();
@@ -150,7 +151,7 @@ public class JSONExtractor {
 
         if(RawData.length()>2){
             for(int i=2;i<RawData.length();i++){
-                Chas chas= new Chas();
+                CervicalScreeningCentre cervical= new CervicalScreeningCentre();
                 JSONObject row=RawData.getJSONObject(i);
 
                 Log.i("raw", row.toString());
@@ -158,12 +159,12 @@ public class JSONExtractor {
                 String[] separated = row.getString("XY").split(",");
 
 
-                chas.setTitle(row.getString("NAME"));
-                chas.setIconURL(row.getString("ICON_NAME"));
-                chas.setX(Double.parseDouble(separated[0]));
-                chas.setY(Double.parseDouble(separated[1]));
+                cervical.setName(row.getString("NAME"));
+                cervical.setIconURL(row.getString("ICON_NAME"));
+                cervical.setX(Double.parseDouble(separated[0]));
+                cervical.setY(Double.parseDouble(separated[1]));
 
-                returningData.add(chas);
+                returningData.add(cervical);
             }
             BaseActivity.cervicalCentres=returningData;
         }
@@ -185,7 +186,7 @@ public class JSONExtractor {
 
         if(RawData.length()>2){
             for(int i=2;i<RawData.length();i++){
-                Chas chas= new Chas();
+                QuitCentre quit= new QuitCentre();
                 JSONObject row=RawData.getJSONObject(i);
 
                 Log.i("raw", row.toString());
@@ -193,12 +194,12 @@ public class JSONExtractor {
                 String[] separated = row.getString("XY").split(",");
 
 
-                chas.setTitle(row.getString("NAME"));
-                chas.setIconURL(row.getString("ICON_NAME"));
-                chas.setX(Double.parseDouble(separated[0]));
-                chas.setY(Double.parseDouble(separated[1]));
+                quit.setName(row.getString("NAME"));
+                quit.setIconURL(row.getString("ICON_NAME"));
+                quit.setX(Double.parseDouble(separated[0]));
+                quit.setY(Double.parseDouble(separated[1]));
 
-                returningData.add(chas);
+                returningData.add(quit);
             }
             BaseActivity.quitCentres=returningData;
         }
@@ -220,7 +221,7 @@ public class JSONExtractor {
 
         if(RawData.length()>2){
             for(int i=2;i<RawData.length();i++){
-                Chas chas= new Chas();
+                RetailPharmacy retail= new RetailPharmacy();
                 JSONObject row=RawData.getJSONObject(i);
 
                 Log.i("raw", row.toString());
@@ -228,12 +229,12 @@ public class JSONExtractor {
                 String[] separated = row.getString("XY").split(",");
 
 
-                chas.setTitle(row.getString("NAME"));
-                chas.setIconURL(row.getString("ICON_NAME"));
-                chas.setX(Double.parseDouble(separated[0]));
-                chas.setY(Double.parseDouble(separated[1]));
+                retail.setName(row.getString("NAME"));
+                retail.setIconURL(row.getString("ICON_NAME"));
+                retail.setX(Double.parseDouble(separated[0]));
+                retail.setY(Double.parseDouble(separated[1]));
 
-                returningData.add(chas);
+                returningData.add(retail);
             }
             BaseActivity.retailPharmacies=returningData;
         }

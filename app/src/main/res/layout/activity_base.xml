@@ -29,7 +29,7 @@ tools:context="com.sla.codurs.chas.activity">
 
         <ImageButton
             android:id="@+id/gpsBtn"
-            android:onClick="getChasAroundGPS"
+            android:onClick="getLayersAroundGPS"
             android:background="@drawable/gps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

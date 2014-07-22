@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +39,11 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.sla.codurs.chas.HTTP.GetAddressSearchRequest;
+import com.sla.codurs.chas.HTTP.GetBreastCentre;
+import com.sla.codurs.chas.HTTP.GetCervicalCentreRequest;
 import com.sla.codurs.chas.HTTP.GetChasRequest;
+import com.sla.codurs.chas.HTTP.GetQuitCenterRequest;
+import com.sla.codurs.chas.HTTP.GetRetailPharmacyRequest;
 import com.sla.codurs.chas.R;
 import com.sla.codurs.chas.model.Address;
 import com.sla.codurs.chas.model.BreastScreeningCentre;
@@ -61,6 +66,7 @@ public class BaseActivity extends Activity {
     ProgressDialog dialog;
     GraphicsLayer graphicsLayer;
 
+    GraphicsLayer chasGraphicLayer;
 
     public static boolean addressEnd = false;
 
@@ -78,10 +84,7 @@ public class BaseActivity extends Activity {
     MenuItem cervicalScreeningMenuItem = null;
     MenuItem retailPharmaciesMenuItem = null;
 
-    // Create MapOptions for each type of basemap.
-    final MapOptions mTopoBasemap = new MapOptions(MapOptions.MapType.TOPO);
-    final MapOptions mStreetsBasemap = new MapOptions(MapOptions.MapType.STREETS);
-    final MapOptions mGrayBasemap = new MapOptions(MapOptions.MapType.GRAY);
+
 
     final MapOptions mOceansBasemap = new MapOptions(MapOptions.MapType.OCEANS);
     // The current map extent, use to set the extent of the map after switching basemaps.
@@ -109,9 +112,6 @@ public class BaseActivity extends Activity {
 
             @Override
             public void onStatusChanged(Object source, STATUS status) {
-                // Set the map extent once the map has been initialized, and the basemap is added
-                // or changed; this will be indicated by the layer initialization of the basemap layer. As there is only
-                // a single layer, there is no need to check the source object.
                 if (STATUS.LAYER_LOADED == status) {
                     mMapView.setExtent(mCurrentMapExtent);
                 }
@@ -125,8 +125,7 @@ public class BaseActivity extends Activity {
         result.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                GetChasRequest searchRequest = new GetChasRequest();
-                new GetLayersBackgroundTask().execute(searchRequest, searchRequest);
+                getLayersAroundSelectedLocation(addresses.get(position).getX(),addresses.get(position).getY());
             }
         });
 
@@ -172,21 +171,22 @@ public class BaseActivity extends Activity {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
 
-                setProgressBarIndeterminateVisibility(true);
+//                setProgressBarIndeterminateVisibility(true);
                 BaseActivity.addresses = null;
+                addressSet=1;
 
                 GetAddressSearchRequest searchRequest = new GetAddressSearchRequest(query, addressSet);
                 new BackgroundTask().execute(searchRequest, searchRequest);
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        setProgressBarIndeterminateVisibility(false);
-                    }
-                }, 2000);
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    public void run() {
+//                        setProgressBarIndeterminateVisibility(false);
+//                    }
+//                }, 2000);
 
                 return false;
             }
@@ -211,23 +211,18 @@ public class BaseActivity extends Activity {
         // Handle menu item selection.
         switch (item.getItemId()) {
             case R.id.chas_centers:
-                mMapView.setMapOptions(mStreetsBasemap);
                 chasMenuItem.setChecked(true);
                 return true;
             case R.id.cervical_screening_centre:
-                mMapView.setMapOptions(mTopoBasemap);
                 breastScreeningMenuItem.setChecked(true);
                 return true;
             case R.id.breast_screening_centres:
-                mMapView.setMapOptions(mGrayBasemap);
                 quiteCentresMenuItem.setChecked(true);
                 return true;
             case R.id.quit_centres:
-                mMapView.setMapOptions(mOceansBasemap);
                 cervicalScreeningMenuItem.setChecked(true);
                 return true;
             case R.id.retail_pharmacy:
-                mMapView.setMapOptions(mOceansBasemap);
                 retailPharmaciesMenuItem.setChecked(true);
                 return true;
             default:
@@ -257,19 +252,8 @@ public class BaseActivity extends Activity {
         ls.setLocationListener(new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                mMapView.zoomTo(ls.getPoint(), 12);
-                // create a simple marker symbol to be used by our graphic
-                SimpleMarkerSymbol sms = new SimpleMarkerSymbol(Color.RED, 25, SimpleMarkerSymbol.STYLE.CIRCLE);
-                // create a point geometry that defines the graphic
-                // create the graphic using the symbol and point geometry
-                Graphic graphic = new Graphic(ls.getPoint(), sms);
+             //  mMapView.zoomTo(ls.getPoint(), 12);
 
-                if(graphicsLayer == null) graphicsLayer = new GraphicsLayer();
-
-                // add the graphic to a graphics layer
-                graphicsLayer.addGraphic(graphic);
-
-                mMapView.addLayer(graphicsLayer);
             }
 
             @Override
@@ -361,53 +345,158 @@ public class BaseActivity extends Activity {
     {
         Envelope env = new Envelope(mMapView.toMapPoint((float) x, (float) y), 100 * mMapView.getResolution(), 100 * mMapView.getResolution());
         double[] extent = new double[4];
-        extent[0] = env.getXMin();
-        extent[1] = env.getYMin();
-        extent[2] = env.getXMin();
-        extent[3] = env.getYMax();
+        extent[0] = x-1000;
+        extent[1] = y-1000;
+        extent[2] = x+1000;
+        extent[3] = y+1000;
 
         return extent;
     }
-
-
-    public void getChasAroundGPS(View v) {
-        double[] extent = getExtent(ls.getLocation().getLatitude(), ls.getLocation().getLongitude());
+    public void getLayersAroundSelectedLocation(double x, double y) {
+        double[] extent = getExtent(x, y);
+        plotLocation(x,y);
 
         GetChasRequest searchRequest = new GetChasRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
-        new BackgroundTask().execute(searchRequest, searchRequest);
+        new GetLayersBackgroundTask().execute(searchRequest, searchRequest);
+
+        if(breastScreeningMenuItem.isChecked()){
+            GetBreastCentre searchRequest2 = new GetBreastCentre(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest2, searchRequest2);
+        }
+        if(cervicalScreeningMenuItem.isChecked()){
+            GetCervicalCentreRequest searchRequest3 = new GetCervicalCentreRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest3, searchRequest3);
+        }
+        if(quiteCentresMenuItem.isChecked()){
+            GetQuitCenterRequest searchRequest4 = new GetQuitCenterRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest4, searchRequest4);
+        }
+
+        if(retailPharmaciesMenuItem.isChecked()){
+            GetRetailPharmacyRequest searchRequest5 = new GetRetailPharmacyRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest5, searchRequest);
+        }
+
     }
 
+    public void getLayersAroundGPS(View v) {
+        double[] extent = getExtent(ls.getPoint().getX(), ls.getPoint().getY());
+
+        GetChasRequest searchRequest = new GetChasRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+        new GetLayersBackgroundTask().execute(searchRequest, searchRequest);
+
+        if(breastScreeningMenuItem.isChecked()){
+            GetBreastCentre searchRequest2 = new GetBreastCentre(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest2, searchRequest2);
+        }
+        if(cervicalScreeningMenuItem.isChecked()){
+            GetCervicalCentreRequest searchRequest3 = new GetCervicalCentreRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest3, searchRequest3);
+        }
+        if(quiteCentresMenuItem.isChecked()){
+            GetQuitCenterRequest searchRequest4 = new GetQuitCenterRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest4, searchRequest4);
+        }
+
+        if(retailPharmaciesMenuItem.isChecked()){
+            GetRetailPharmacyRequest searchRequest5 = new GetRetailPharmacyRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
+            new GetLayersBackgroundTask().execute(searchRequest5, searchRequest);
+        }
+
+    }
+
+    //Plot the selected location
+    public void plotLocation(double x, double y){
+        if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+        PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.dots));
+        PopupContainer popupContainer = new PopupContainer(mMapView);
+        Graphic graphic = new Graphic(new Point(x,y), icon);
+        //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
+        //popupContainer.addPopup(popup);
+        graphicsLayer.addGraphic(graphic);
+        mMapView.addLayer(graphicsLayer);
+    }
     //Plots chas layers on map
     public void plotChasCentres() {
 
-        for (int i = 0; i < BaseActivity.chases.size(); i++) {
-            PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
-            PopupContainer popupContainer = new PopupContainer(mMapView);
-            Graphic graphic = new Graphic(new Point(BaseActivity.chases.get(i).getX(), BaseActivity.chases.get(i).getY()), icon);
-            Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
-            popupContainer.addPopup(popup);
-            graphicsLayer.addGraphic(graphic);
+        if(BaseActivity.chases!=null){
+            if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+            for (int i = 0; i < BaseActivity.chases.size(); i++) {
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PopupContainer popupContainer = new PopupContainer(mMapView);
+                Graphic graphic = new Graphic(new Point(BaseActivity.chases.get(i).getX(), BaseActivity.chases.get(i).getY()), icon);
+                //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
+                //popupContainer.addPopup(popup);
+                graphicsLayer.addGraphic(graphic);
+            }
+            mMapView.addLayer(graphicsLayer);
         }
+
+
     }
 
     //Plot Breast on Map
     public void plotBreastCentres() {
-
+        if(BaseActivity.brestCentres!=null){
+            if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+            for (int i = 0; i < BaseActivity.brestCentres.size(); i++) {
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PopupContainer popupContainer = new PopupContainer(mMapView);
+                Graphic graphic = new Graphic(new Point(BaseActivity.brestCentres.get(i).getX(), BaseActivity.brestCentres.get(i).getY()), icon);
+                //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
+                //popupContainer.addPopup(popup);
+                graphicsLayer.addGraphic(graphic);
+            }
+            mMapView.addLayer(graphicsLayer);
+        }
     }
 
     //Plot cervical centres on Map
     public void plotCervicalCentres() {
-
+        if(BaseActivity.cervicalCentres!=null){
+            if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+            for (int i = 0; i < BaseActivity.cervicalCentres.size(); i++) {
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PopupContainer popupContainer = new PopupContainer(mMapView);
+                Graphic graphic = new Graphic(new Point(BaseActivity.cervicalCentres.get(i).getX(), BaseActivity.cervicalCentres.get(i).getY()), icon);
+                //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
+                //popupContainer.addPopup(popup);
+                graphicsLayer.addGraphic(graphic);
+            }
+            mMapView.addLayer(graphicsLayer);
+        }
     }
 
     //Plot Quit centre on Map
     public void plotQuitCentres() {
-
+        if(BaseActivity.quitCentres!=null){
+            if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+            for (int i = 0; i < BaseActivity.quitCentres.size(); i++) {
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PopupContainer popupContainer = new PopupContainer(mMapView);
+                Graphic graphic = new Graphic(new Point(BaseActivity.quitCentres.get(i).getX(), BaseActivity.quitCentres.get(i).getY()), icon);
+                //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
+                //popupContainer.addPopup(popup);
+                graphicsLayer.addGraphic(graphic);
+            }
+            mMapView.addLayer(graphicsLayer);
+        }
     }
 
     //plot RetailPharmacyCentres on map
     public void plotRetailPharmacyCentres() {
-
+        if(BaseActivity.retailPharmacies!=null){
+            if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+            for (int i = 0; i < BaseActivity.retailPharmacies.size(); i++) {
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PopupContainer popupContainer = new PopupContainer(mMapView);
+                Graphic graphic = new Graphic(new Point(BaseActivity.retailPharmacies.get(i).getX(), BaseActivity.retailPharmacies.get(i).getY()), icon);
+                //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
+                //popupContainer.addPopup(popup);
+                graphicsLayer.addGraphic(graphic);
+            }
+            mMapView.addLayer(graphicsLayer);
+        }
     }
 
     protected void onPause() {
@@ -425,25 +514,31 @@ public class BaseActivity extends Activity {
 
         @Override
         protected void onPostExecute(Long result) {
+            resultFrame.setVisibility(View.GONE);
             plotChasCentres();
+            if(breastScreeningMenuItem.isChecked())
+                plotBreastCentres();
+            if(cervicalScreeningMenuItem.isChecked())
+                plotCervicalCentres();
+            if(quiteCentresMenuItem.isChecked())
+                plotQuitCentres();
+            if(retailPharmaciesMenuItem.isChecked())
+                plotRetailPharmacyCentres();
         }
 
         @Override
         protected void onPreExecute() {
-//            dialog = ProgressDialog.show(getBaseContext(), "",
-//                    "Loading. Please wait...", true);
-            //Toast.makeText(getBaseContext(), "Loading...", Toast.LENGTH_SHORT).show();
             super.onPreExecute();
+
         }
 
         @Override
         protected Long doInBackground(Runnable... task) {
 
-            for (int i = 0; i < task.length; i++) {
-                task[i].run();
 
-                if (isCancelled()) break;
-            }
+                task[0].run();
+
+
             return null;
         }
     }

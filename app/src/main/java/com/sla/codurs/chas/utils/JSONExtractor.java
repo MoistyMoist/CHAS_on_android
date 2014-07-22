@@ -4,7 +4,11 @@ import android.util.Log;
 
 import com.sla.codurs.chas.activity.BaseActivity;
 import com.sla.codurs.chas.model.Address;
+import com.sla.codurs.chas.model.BreastScreeningCentre;
+import com.sla.codurs.chas.model.CervicalScreeningCentre;
 import com.sla.codurs.chas.model.Chas;
+import com.sla.codurs.chas.model.QuitCentre;
+import com.sla.codurs.chas.model.RetailPharmacy;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -101,21 +105,141 @@ public class JSONExtractor {
 
     //THIS METHOD EXRTRACTS THE BREAST SEARCH RESULT AND FORMATS IT
     public void ExtractBreastSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+        HttpEntity entity = data.getEntity();
+        InputStream instream = entity.getContent();
+        String result= convertStreamToString(instream);
+        JSONObject json = null;
+        json = new JSONObject(result);
+        JSONArray RawData= json.getJSONArray("SrchResults");
+        Log.i("raw1", RawData.toString());
+        ArrayList<BreastScreeningCentre> returningData= new ArrayList<BreastScreeningCentre>();
 
+        if(RawData.length()>2){
+            for(int i=2;i<RawData.length();i++){
+                Chas chas= new Chas();
+                JSONObject row=RawData.getJSONObject(i);
+
+                Log.i("raw", row.toString());
+
+                String[] separated = row.getString("XY").split(",");
+
+
+                chas.setTitle(row.getString("NAME"));
+                chas.setIconURL(row.getString("ICON_NAME"));
+                chas.setX(Double.parseDouble(separated[0]));
+                chas.setY(Double.parseDouble(separated[1]));
+
+                returningData.add(chas);
+            }
+            BaseActivity.brestCentres=returningData;
+        }
+        else{
+            BaseActivity.brestCentres=null;
+        }
     }
     //THIS METHOD EXRTRACTS THE CERVICAL SEARCH RESULT AND FORMATS IT
     public void ExtractCervicalSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+        HttpEntity entity = data.getEntity();
+        InputStream instream = entity.getContent();
+        String result= convertStreamToString(instream);
+        JSONObject json = null;
+        json = new JSONObject(result);
+        JSONArray RawData= json.getJSONArray("SrchResults");
+        Log.i("raw1", RawData.toString());
+        ArrayList<CervicalScreeningCentre> returningData= new ArrayList<CervicalScreeningCentre>();
 
+        if(RawData.length()>2){
+            for(int i=2;i<RawData.length();i++){
+                Chas chas= new Chas();
+                JSONObject row=RawData.getJSONObject(i);
+
+                Log.i("raw", row.toString());
+
+                String[] separated = row.getString("XY").split(",");
+
+
+                chas.setTitle(row.getString("NAME"));
+                chas.setIconURL(row.getString("ICON_NAME"));
+                chas.setX(Double.parseDouble(separated[0]));
+                chas.setY(Double.parseDouble(separated[1]));
+
+                returningData.add(chas);
+            }
+            BaseActivity.cervicalCentres=returningData;
+        }
+        else{
+            BaseActivity.cervicalCentres=null;
+        }
     }
 
     //THIS METHOD EXRTRACTS THE QUIT SEARCH RESULT AND FORMATS IT
     public void ExtractQuitSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+        HttpEntity entity = data.getEntity();
+        InputStream instream = entity.getContent();
+        String result= convertStreamToString(instream);
+        JSONObject json = null;
+        json = new JSONObject(result);
+        JSONArray RawData= json.getJSONArray("SrchResults");
+        Log.i("raw1", RawData.toString());
+        ArrayList<QuitCentre> returningData= new ArrayList<QuitCentre>();
 
+        if(RawData.length()>2){
+            for(int i=2;i<RawData.length();i++){
+                Chas chas= new Chas();
+                JSONObject row=RawData.getJSONObject(i);
+
+                Log.i("raw", row.toString());
+
+                String[] separated = row.getString("XY").split(",");
+
+
+                chas.setTitle(row.getString("NAME"));
+                chas.setIconURL(row.getString("ICON_NAME"));
+                chas.setX(Double.parseDouble(separated[0]));
+                chas.setY(Double.parseDouble(separated[1]));
+
+                returningData.add(chas);
+            }
+            BaseActivity.quitCentres=returningData;
+        }
+        else{
+            BaseActivity.quitCentres=null;
+        }
     }
 
     //THIS METHOD EXRTRACTS THE RETAIL SEARCH RESULT AND FORMATS IT
     public void ExtractRetailSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException{
+        HttpEntity entity = data.getEntity();
+        InputStream instream = entity.getContent();
+        String result= convertStreamToString(instream);
+        JSONObject json = null;
+        json = new JSONObject(result);
+        JSONArray RawData= json.getJSONArray("SrchResults");
+        Log.i("raw1", RawData.toString());
+        ArrayList<RetailPharmacy> returningData= new ArrayList<RetailPharmacy>();
 
+        if(RawData.length()>2){
+            for(int i=2;i<RawData.length();i++){
+                Chas chas= new Chas();
+                JSONObject row=RawData.getJSONObject(i);
+
+                Log.i("raw", row.toString());
+
+                String[] separated = row.getString("XY").split(",");
+
+
+                chas.setTitle(row.getString("NAME"));
+                chas.setIconURL(row.getString("ICON_NAME"));
+                chas.setX(Double.parseDouble(separated[0]));
+                chas.setY(Double.parseDouble(separated[1]));
+
+                returningData.add(chas);
+            }
+            BaseActivity.retailPharmacies=returningData;
+        }
+        else{
+            BaseActivity.retailPharmacies=null;
+        }
     }
 
 

@@ -4,6 +4,7 @@ package com.sla.codurs.chas.model;
  * Created by Moistyburger on 21/7/14.
  */
 public class BreastScreeningCentre {
+    public int hashCode;
     private String name;
     private double x;
     private double y;

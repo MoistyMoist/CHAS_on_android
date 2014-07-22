@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by Moistyburger on 9/7/14.
  */
 public class Chas {
-
+    public int hashCode;
     private double x;
     private double y;
     private String title;

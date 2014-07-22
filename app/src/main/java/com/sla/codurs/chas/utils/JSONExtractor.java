@@ -56,9 +56,9 @@ public class JSONExtractor {
                 returningData.add(address);
             }
             BaseActivity.addresses=returningData;
+            BaseActivity.addressEnd=false;
         }
         else{
-            BaseActivity.addresses=null;
             BaseActivity.addressEnd=true;
         }
 

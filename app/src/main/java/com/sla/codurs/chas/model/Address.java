@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 public class Address {
 
+    public int hashCode;
     private double x;
     private double y;
     private String title;

@@ -53,8 +53,14 @@ import com.sla.codurs.chas.model.QuitCentre;
 import com.sla.codurs.chas.model.RetailPharmacy;
 import com.sla.codurs.chas.utils.AddressAdapter;
 
+import org.codehaus.jackson.map.deser.ValueInstantiators;
+
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -77,6 +83,7 @@ public class BaseActivity extends Activity {
     public static ArrayList<QuitCentre> quitCentres = null;
     public static ArrayList<RetailPharmacy> retailPharmacies = null;
 
+    String searchQuery="";
     // The basemap switching menu items.
     MenuItem chasMenuItem = null;
     MenuItem breastScreeningMenuItem = null;
@@ -125,7 +132,7 @@ public class BaseActivity extends Activity {
         result.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                getLayersAroundSelectedLocation(addresses.get(position).getX(),addresses.get(position).getY());
+                getLayersAroundSelectedLocation(addresses.get(position).getX(),addresses.get(position).getY(),position);
             }
         });
 
@@ -177,8 +184,8 @@ public class BaseActivity extends Activity {
 //                setProgressBarIndeterminateVisibility(true);
                 BaseActivity.addresses = null;
                 addressSet=1;
-
-                GetAddressSearchRequest searchRequest = new GetAddressSearchRequest(query, addressSet);
+                searchQuery=query;
+                GetAddressSearchRequest searchRequest = new GetAddressSearchRequest(searchQuery, addressSet);
                 new BackgroundTask().execute(searchRequest, searchRequest);
 
 //                Handler handler = new Handler();
@@ -214,16 +221,28 @@ public class BaseActivity extends Activity {
                 chasMenuItem.setChecked(true);
                 return true;
             case R.id.cervical_screening_centre:
-                breastScreeningMenuItem.setChecked(true);
+                if(cervicalScreeningMenuItem.isChecked())
+                    cervicalScreeningMenuItem.setChecked(false);
+                else
+                    cervicalScreeningMenuItem.setChecked(true);
                 return true;
             case R.id.breast_screening_centres:
-                quiteCentresMenuItem.setChecked(true);
+                if(breastScreeningMenuItem.isChecked())
+                    breastScreeningMenuItem.setChecked(false);
+                else
+                    breastScreeningMenuItem.setChecked(true);
                 return true;
             case R.id.quit_centres:
-                cervicalScreeningMenuItem.setChecked(true);
+                if(quiteCentresMenuItem.isChecked())
+                    quiteCentresMenuItem.setChecked(false);
+                else
+                    quiteCentresMenuItem.setChecked(true);
                 return true;
             case R.id.retail_pharmacy:
-                retailPharmaciesMenuItem.setChecked(true);
+                if(retailPharmaciesMenuItem.isChecked())
+                    retailPharmaciesMenuItem.setChecked(false);
+                else
+                    retailPharmaciesMenuItem.setChecked(true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -278,33 +297,71 @@ public class BaseActivity extends Activity {
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
 
             public void onSingleTap(float x, float y) {
-                if(_callout != null){
-                    _callout.hide();
-                }
-                else
-                {
-                    _callout = mMapView.getCallout();
-                    _callout.setStyle(R.xml.callout_style);
-                    //_callout.setContent(loadView(countyName,countyPop));
-                }
-
-                Graphic graphic = findClosestGraphic(x, y, graphicsLayer ,25);
-                if(graphic == null){
-                    //_quickStartLib.findAddressByXY(x, y);
-                }
-                else{
-                    String message = "Lorem ipsum";
-                    Map<String,Object> atts = graphic.getAttributes();
-                    for(Map.Entry<String,Object> entry : atts.entrySet()){
-                        String key = entry.getKey();
-                        Object value = entry.getValue();
-                        message = message + key + ": " + value +"\n";
+                if(graphicsLayer!=null){
+                    if(_callout != null){
+                        _callout.hide();
                     }
-                    Point location = (Point) graphic.getGeometry();
+                    else
+                    {
+                        _callout = mMapView.getCallout();
+                        _callout.setStyle(R.xml.callout_style);
+                        //_callout.setContent(loadView(countyName,countyPop));
+                    }
 
-                    _callout.setOffset(0, -15);
-                    _callout.show(location, message(message));
+                    Graphic graphic = findClosestGraphic(x, y, graphicsLayer ,25);
+                    if(graphic == null){
+                        //_quickStartLib.findAddressByXY(x, y);
+                    }
+                    else{
+                        String message = "Lorem ipsum";
+
+
+                        for(int i=0;i<BaseActivity.chases.size();i++){
+                            if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.chases.get(i).hashCode))
+                                message=BaseActivity.chases.get(i).getTitle();
+                        }
+                        if(breastScreeningMenuItem.isChecked()){
+                            if(BaseActivity.brestCentres!=null){
+                                for(int i=0;i<BaseActivity.brestCentres.size();i++){
+                                    if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.brestCentres.get(i).hashCode))
+                                        message=BaseActivity.brestCentres.get(i).getName();
+                                }
+                            }
+                        }
+                        if(cervicalScreeningMenuItem.isChecked()){
+                            if(BaseActivity.cervicalCentres!=null){
+                                for(int i=0;i<BaseActivity.cervicalCentres.size();i++){
+                                    if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.cervicalCentres.get(i).hashCode))
+                                        message=BaseActivity.cervicalCentres.get(i).getName();
+                                }
+                            }
+                        }
+
+                        if(quiteCentresMenuItem.isChecked()){
+                            if(BaseActivity.quitCentres!=null){
+                                for(int i=0;i<BaseActivity.quitCentres.size();i++){
+                                    if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.quitCentres.get(i).hashCode))
+                                        message=BaseActivity.quitCentres.get(i).getName();
+                                }
+                            }
+                        }
+                        if(addresses!=null){
+                            for(int i=0;i<BaseActivity.addresses.size();i++){
+                                if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.addresses.get(i).hashCode))
+                                    message=BaseActivity.addresses.get(i).getTitle();
+                            }
+                        }
+
+
+                        Point location = (Point) graphic.getGeometry();
+
+                        _callout.setOffset(0, -15);
+                        _callout.setMaxWidth(1000);
+                        _callout.setMaxHeight(50);
+                        _callout.show(location, message(message));
+                    }
                 }
+
 
             }
         });
@@ -335,11 +392,7 @@ public class BaseActivity extends Activity {
 
 
 
-    public void zoomToGps(View v) {
-        mMapView.zoomTo(ls.getPoint(), 14);
 
-        int tolerance = 20;
-    }
 
     public double[] getExtent(double x, double y)
     {
@@ -352,9 +405,11 @@ public class BaseActivity extends Activity {
 
         return extent;
     }
-    public void getLayersAroundSelectedLocation(double x, double y) {
+    public void getLayersAroundSelectedLocation(double x, double y,int i) {
         double[] extent = getExtent(x, y);
-        plotLocation(x,y);
+        if(graphicsLayer!=null)
+            graphicsLayer.removeAll();
+        plotLocation(x,y,i);
 
         GetChasRequest searchRequest = new GetChasRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
         new GetLayersBackgroundTask().execute(searchRequest, searchRequest);
@@ -380,6 +435,9 @@ public class BaseActivity extends Activity {
     }
 
     public void getLayersAroundGPS(View v) {
+        if(graphicsLayer!=null)
+            graphicsLayer.removeAll();
+
         double[] extent = getExtent(ls.getPoint().getX(), ls.getPoint().getY());
 
         GetChasRequest searchRequest = new GetChasRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
@@ -400,17 +458,18 @@ public class BaseActivity extends Activity {
 
         if(retailPharmaciesMenuItem.isChecked()){
             GetRetailPharmacyRequest searchRequest5 = new GetRetailPharmacyRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
-            new GetLayersBackgroundTask().execute(searchRequest5, searchRequest);
+            new GetLayersBackgroundTask().execute(searchRequest5, searchRequest5);
         }
 
     }
 
     //Plot the selected location
-    public void plotLocation(double x, double y){
+    public void plotLocation(double x, double y,int i){
         if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
-        PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.dots));
+        PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.location_icon));
         PopupContainer popupContainer = new PopupContainer(mMapView);
         Graphic graphic = new Graphic(new Point(x,y), icon);
+        BaseActivity.addresses.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
         //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
         //popupContainer.addPopup(popup);
         graphicsLayer.addGraphic(graphic);
@@ -424,7 +483,11 @@ public class BaseActivity extends Activity {
             for (int i = 0; i < BaseActivity.chases.size(); i++) {
                 PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
                 PopupContainer popupContainer = new PopupContainer(mMapView);
+                Point p= new Point();
+
                 Graphic graphic = new Graphic(new Point(BaseActivity.chases.get(i).getX(), BaseActivity.chases.get(i).getY()), icon);
+
+                BaseActivity.chases.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
                 //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
                 //popupContainer.addPopup(popup);
                 graphicsLayer.addGraphic(graphic);
@@ -440,11 +503,12 @@ public class BaseActivity extends Activity {
         if(BaseActivity.brestCentres!=null){
             if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
             for (int i = 0; i < BaseActivity.brestCentres.size(); i++) {
-                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.breastscreen_icon));
                 PopupContainer popupContainer = new PopupContainer(mMapView);
                 Graphic graphic = new Graphic(new Point(BaseActivity.brestCentres.get(i).getX(), BaseActivity.brestCentres.get(i).getY()), icon);
                 //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
                 //popupContainer.addPopup(popup);
+                BaseActivity.brestCentres.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
                 graphicsLayer.addGraphic(graphic);
             }
             mMapView.addLayer(graphicsLayer);
@@ -456,11 +520,12 @@ public class BaseActivity extends Activity {
         if(BaseActivity.cervicalCentres!=null){
             if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
             for (int i = 0; i < BaseActivity.cervicalCentres.size(); i++) {
-                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.cervical_icon));
                 PopupContainer popupContainer = new PopupContainer(mMapView);
                 Graphic graphic = new Graphic(new Point(BaseActivity.cervicalCentres.get(i).getX(), BaseActivity.cervicalCentres.get(i).getY()), icon);
                 //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
                 //popupContainer.addPopup(popup);
+                BaseActivity.cervicalCentres.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
                 graphicsLayer.addGraphic(graphic);
             }
             mMapView.addLayer(graphicsLayer);
@@ -472,11 +537,12 @@ public class BaseActivity extends Activity {
         if(BaseActivity.quitCentres!=null){
             if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
             for (int i = 0; i < BaseActivity.quitCentres.size(); i++) {
-                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.quitcentre_icon));
                 PopupContainer popupContainer = new PopupContainer(mMapView);
                 Graphic graphic = new Graphic(new Point(BaseActivity.quitCentres.get(i).getX(), BaseActivity.quitCentres.get(i).getY()), icon);
                 //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
                 //popupContainer.addPopup(popup);
+                BaseActivity.quitCentres.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
                 graphicsLayer.addGraphic(graphic);
             }
             mMapView.addLayer(graphicsLayer);
@@ -488,11 +554,12 @@ public class BaseActivity extends Activity {
         if(BaseActivity.retailPharmacies!=null){
             if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
             for (int i = 0; i < BaseActivity.retailPharmacies.size(); i++) {
-                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.singhealth_polyclinics_logo));
                 PopupContainer popupContainer = new PopupContainer(mMapView);
                 Graphic graphic = new Graphic(new Point(BaseActivity.retailPharmacies.get(i).getX(), BaseActivity.retailPharmacies.get(i).getY()), icon);
                 //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
                 //popupContainer.addPopup(popup);
+                BaseActivity.retailPharmacies.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
                 graphicsLayer.addGraphic(graphic);
             }
             mMapView.addLayer(graphicsLayer);
@@ -552,6 +619,10 @@ public class BaseActivity extends Activity {
 //            dialog.dismiss();
             if (!BaseActivity.addressEnd) {
                 addressSet++;
+                Log.i("address search","still searching");
+                GetAddressSearchRequest searchRequest = new GetAddressSearchRequest(searchQuery, addressSet);
+                new BackgroundTask().execute(searchRequest, searchRequest);
+
             } else {
                 BaseActivity.addressEnd = true;
                 addressSet = 1;

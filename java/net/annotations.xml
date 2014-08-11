@@ -1,0 +1,5 @@
+<root>
+    <item name='java.net.URL'>
+        <annotation name='org.jetbrains.annotations.Nullable' />
+    </item>
+</root>

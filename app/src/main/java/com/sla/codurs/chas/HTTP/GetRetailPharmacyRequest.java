@@ -47,7 +47,7 @@ public class GetRetailPharmacyRequest implements Runnable{
         HttpGet httpget = null;
 
 
-        String url = "http://uat.onemap.sg/API/services.svc/mashupData?token=6XuW0BLzyfHZw4NbhtP9MlZ8h3mtyKpe6/uzOuPLzxC+/G53S9qpjw0raKnthwFBwTIsqH3Yv6No5+lLK57wKdlmO3c1K37l|mv73ZvjFcSo=&themeName=REGISTERED_PHARMACY&extents="+xMin+","+yMin+","+xMax+","+yMax+"&dl=F";
+        String url = "http://uat.onemap.sg/API/services.svc/mashupData?token=6XuW0BLzyfHZw4NbhtP9MlZ8h3mtyKpe6/uzOuPLzxC+/G53S9qpjw0raKnthwFBwTIsqH3Yv6No5+lLK57wKdlmO3c1K37l|mv73ZvjFcSo=&themeName=REGISTERED_PHARMACY&extents="+xMin+","+yMin+","+xMax+","+yMax;
         //Log.i("EVENT",url);
         String urlEncoded = Uri.encode(url, ALLOWED_URI_CHARS);
 

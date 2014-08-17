@@ -7,14 +7,40 @@ import java.util.ArrayList;
  */
 public class Chas {
     public int hashCode;
+    private String title;
+    private String description;
+    private String address;
+    private String URL;
     private double x;
     private double y;
-    private String title;
     private String iconURL;
 
     public Chas() {
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
     public void setX(double x){
         this.x=x;
     }

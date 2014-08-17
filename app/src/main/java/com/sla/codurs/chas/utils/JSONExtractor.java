@@ -7,6 +7,7 @@ import com.sla.codurs.chas.model.Address;
 import com.sla.codurs.chas.model.BreastScreeningCentre;
 import com.sla.codurs.chas.model.CervicalScreeningCentre;
 import com.sla.codurs.chas.model.Chas;
+import com.sla.codurs.chas.model.Direction;
 import com.sla.codurs.chas.model.QuitCentre;
 import com.sla.codurs.chas.model.RetailPharmacy;
 
@@ -89,6 +90,9 @@ public class JSONExtractor {
 
                 chas.setTitle(row.getString("NAME"));
                 chas.setIconURL(row.getString("ICON_NAME"));
+                chas.setURL(row.getString("URL"));
+                chas.setAddress(row.getString("ADDRESS"));
+                chas.setDescription(row.getString("DESCRIPTION"));
                 chas.setX(Double.parseDouble(separated[0]));
                 chas.setY(Double.parseDouble(separated[1]));
 
@@ -244,7 +248,41 @@ public class JSONExtractor {
     }
 
 
+    public void ExtractDirectionSearchResult(HttpResponse data) throws IllegalStateException, IOException, JSONException {
+        HttpEntity entity = data.getEntity();
+        InputStream instream = entity.getContent();
+        String result= convertStreamToString(instream);
+        JSONObject json = null;
+        json = new JSONObject(result);
+//        Log.i("raw1", json.toString());
+        JSONObject features= json.getJSONObject("routes");
+//        Log.i("raw2", json.toString());
+        JSONArray array= features.getJSONArray("features");
+//        Log.i("raw2", array.toString());
+        JSONObject gemometry= array.getJSONObject(0);
+//        Log.i("raw3", gemometry.toString());
+        JSONObject paths= gemometry.getJSONObject("geometry");
+//        Log.i("raw4", paths.toString());
+        JSONArray points= paths.getJSONArray("paths");
+//        Log.i("raw5", points.toString());
+        JSONArray points2= points.getJSONArray(0);
+//        Log.i("raw6", points2.toString());
 
+        BaseActivity.directions=new ArrayList<Direction>();
+
+
+        for(int i=0;i<points2.length();i++){
+            Direction direction= new Direction();
+            Log.i("point"+i,points2.getJSONArray(i).toString());
+
+            direction.setX(points2.getJSONArray(i).getDouble(0));
+            direction.setY(points2.getJSONArray(i).getDouble(1));
+//                Log.i("pointX:"+i,points2.getJSONArray(i).getString(0));
+//                Log.i("pointY:"+i,points2.getJSONArray(i).getString(1));
+            BaseActivity.directions.add(direction);
+
+        }
+    }
 
 
 

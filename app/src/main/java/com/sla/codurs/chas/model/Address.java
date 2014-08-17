@@ -12,6 +12,8 @@ public class Address {
     private double y;
     private String title;
     private String iconURL;
+    private String addesss;
+    private String contactList;
 
     public Address() {
     }

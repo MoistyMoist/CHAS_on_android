@@ -10,30 +10,30 @@
         <menu>
             <group android:checkableBehavior="all">
             <item
-                android:id="@+id/chas_centers"
+                android:id="@+id/menu_all"
                 android:orderInCategory="100"
                 android:showAsAction="never"
-                android:title="@string/chas" />
+                android:title="ALL" />
             <item
-                android:id="@+id/breast_screening_centres"
+                android:id="@+id/menu_north"
                 android:orderInCategory="100"
                 android:showAsAction="never"
-                android:title="@string/breast_screening" />
+                android:title="NORTH" />
             <item
-                android:id="@+id/quit_centres"
+                android:id="@+id/menu_south"
                 android:orderInCategory="100"
                 android:showAsAction="never"
-                android:title="@string/quit_centers" />
+                android:title="SOUTH" />
             <item
-                android:id="@+id/cervical_screening_centre"
+                android:id="@+id/menu_east"
                 android:orderInCategory="100"
                 android:showAsAction="never"
-                android:title="@string/cervical_screening" />
+                android:title="EAST" />
             <item
-                android:id="@+id/retail_pharmacy"
+                android:id="@+id/menu_west"
                 android:orderInCategory="100"
                 android:showAsAction="never"
-                android:title="@string/retail_pharmacy" />
+                android:title="WEST" />
             </group>
         </menu>
     </item>

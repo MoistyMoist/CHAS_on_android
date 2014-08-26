@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:weightSum="1"
+                android:orientation="horizontal">
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="fill_parent"
+                    android:onClick="changeTab1"
+                    android:text="Public Transport"/>
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:onClick="changeTab2"
+                    android:layout_height="fill_parent"
+                    android:text="Driving"/>
+            </LinearLayout>
+
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="80dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="40dp"
+                            android:gravity="center"
+                            android:text="Starting Point (Address or Postal code)"/>
+                        <EditText
+                            android:id="@+id/direction_query"
+                            android:layout_width="fill_parent"
+                            android:layout_height="40dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tab1"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical">
+
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:weightSum="1"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="0.5"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical">
+                                <RadioGroup
+                                    android:id="@+id/transport_type"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" >
+
+                                    <RadioButton
+                                        android:id="@+id/bus_and_mrt"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Bus and MRT"
+                                        android:tag="BUS%2FMRT"
+                                        android:checked="true" />
+
+                                    <RadioButton
+                                        android:id="@+id/only_bus"
+                                        android:tag="BUS"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Only Bus" />
+
+                                </RadioGroup>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="0.5"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical">
+                                <RadioGroup
+                                    android:id="@+id/selected_way"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" >
+
+                                    <RadioButton
+                                        android:id="@+id/fastest_way"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Fastest Way"
+                                        android:tag="fastest"
+                                        android:checked="true" />
+
+                                    <RadioButton
+                                        android:id="@+id/cheapest_way"
+                                        android:tag="cheapest"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Cheapest Way" />
+
+                                </RadioGroup>
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="2dp"
+                            android:background="@android:color/darker_gray"/>
+                        <Button
+                            android:layout_width="fill_parent"
+                            android:layout_height="50dp"
+                            android:text="Submit"
+                            android:onClick="findStartPoint"
+                            android:layout_gravity="center"
+                            android:background="@android:color/holo_blue_bright"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tab2"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="fill_parent"
+                            android:orientation="vertical">
+                            <CheckBox
+                                android:id="@+id/avoid_erp"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:text="Avoid ERP"/>
+                            </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="fill_parent"
+                            android:orientation="vertical">
+                            <RadioGroup
+                                android:id="@+id/selected_way2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" >
+
+                                <RadioButton
+                                    android:id="@+id/fastest_way2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:tag="fastest"
+                                    android:text="Fastest Way"
+                                    android:checked="true" />
+
+                                <RadioButton
+                                    android:id="@+id/shortest_way"
+                                    android:tag="shortest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Shortest Way" />
+
+                            </RadioGroup>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="2dp"
+                            android:background="@android:color/darker_gray"/>
+                        <Button
+                            android:layout_width="fill_parent"
+                            android:layout_height="50dp"
+                            android:text="Submit"
+                            android:onClick="findStartPoint"
+                            android:layout_gravity="center"
+                            android:background="@android:color/holo_blue_bright"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </FrameLayout>
+
+
+
+        </LinearLayout>
+</LinearLayout>

@@ -18,14 +18,22 @@ public class GetDirectionRequest implements Runnable{
     private double fromY;
     private double toX;
     private double toY;
+    private String routeMode;
+    private int avoidERP=0;
+    private String routeOption;
 
     private static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
-    public GetDirectionRequest(double fromX, double fromY, double toX, double toY){
+    public GetDirectionRequest(double fromX, double fromY, double toX, double toY, String routeMode, int avoidERP, String routeOption){
         this.fromX=fromX;
         this.fromY=fromY;
         this.toX=toX;
         this.toY=toY;
+        this.routeMode=routeMode;
+        this.routeOption=routeOption;
+        if(avoidERP!=-1)
+            this.avoidERP=avoidERP;
+
     }
 
     @Override
@@ -34,7 +42,7 @@ public class GetDirectionRequest implements Runnable{
         HttpGet httpget = null;
 
 
-        String url = "http://www.onemap.sg/API/services.svc/route/solve?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&routeStops="+fromX+","+fromY+";"+toX+","+toY+"&routemode=DRIVE&avoidERP=0&routeOption=shortest";
+        String url = "http://www.onemap.sg/API/services.svc/route/solve?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&routeStops="+fromX+","+fromY+";"+toX+","+toY+"&routemode="+routeMode+"&avoidERP="+avoidERP+"&routeOption="+routeOption;
         Log.i("URL", url);
         String urlEncoded = Uri.encode(url, ALLOWED_URI_CHARS);
 

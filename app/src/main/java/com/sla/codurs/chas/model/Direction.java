@@ -10,6 +10,7 @@ public class Direction {
     private double x;
     private double y;
 
+
     public double getX() {
         return x;
     }

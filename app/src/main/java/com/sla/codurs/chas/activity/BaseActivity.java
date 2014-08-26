@@ -1,15 +1,15 @@
 package com.sla.codurs.chas.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
-import android.inputmethodservice.KeyboardView;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -17,7 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,15 +34,12 @@ import com.esri.android.map.MapOptions;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnLongPressListener;
-import com.esri.android.map.event.OnPanListener;
 import com.esri.android.map.event.OnPinchListener;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
-import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.map.popup.PopupContainer;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polygon;
 import com.esri.core.geometry.Polyline;
@@ -45,20 +47,12 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.sla.codurs.chas.HTTP.GetAddressSearchRequest;
-import com.sla.codurs.chas.HTTP.GetBreastCentre;
-import com.sla.codurs.chas.HTTP.GetCervicalCentreRequest;
 import com.sla.codurs.chas.HTTP.GetChasRequest;
 import com.sla.codurs.chas.HTTP.GetDirectionRequest;
-import com.sla.codurs.chas.HTTP.GetQuitCenterRequest;
-import com.sla.codurs.chas.HTTP.GetRetailPharmacyRequest;
 import com.sla.codurs.chas.R;
 import com.sla.codurs.chas.model.Address;
-import com.sla.codurs.chas.model.BreastScreeningCentre;
-import com.sla.codurs.chas.model.CervicalScreeningCentre;
 import com.sla.codurs.chas.model.Chas;
 import com.sla.codurs.chas.model.Direction;
-import com.sla.codurs.chas.model.QuitCentre;
-import com.sla.codurs.chas.model.RetailPharmacy;
 import com.sla.codurs.chas.utils.AddressAdapter;
 
 import java.util.ArrayList;
@@ -69,19 +63,16 @@ public class BaseActivity extends Activity {
     LocationDisplayManager ls;
     int addressSet = 1;
     ListView result;
+    TextView message;
     GraphicsLayer graphicsLayer;
 
     public static boolean addressEnd = false;
 
     public static ArrayList<Chas> chases = null;
     public static ArrayList<Address> addresses = null;
-    public static ArrayList<BreastScreeningCentre> brestCentres = null;
-    public static ArrayList<CervicalScreeningCentre> cervicalCentres = null;
-    public static ArrayList<QuitCentre> quitCentres = null;
-    public static ArrayList<RetailPharmacy> retailPharmacies = null;
-    public static ArrayList<Direction> directions=null;
+    public static ArrayList<Direction> directions = null;
 
-    String searchQuery="";
+    String searchQuery = "";
     // The basemap switching menu items.
     MenuItem selectAll = null;
     MenuItem selectNorth = null;
@@ -89,30 +80,30 @@ public class BaseActivity extends Activity {
     MenuItem selectEast = null;
     MenuItem selectWest = null;
 
-    private String wholeXMin="-27328.317339767982";
-    private String wholeYMin="24037.412581491837";
-    private String wholeXMax="82741.27879942424";
-    private String wholeYMax="57975.53805774277";
+    private String wholeXMin = "-27328.317339767982";
+    private String wholeYMin = "24037.412581491837";
+    private String wholeXMax = "82741.27879942424";
+    private String wholeYMax = "57975.53805774277";
 
-    private String northXMin="12743.895004656708";
-    private String northYMin="42974.73372280078";
-    private String northXMax="40261.294039454726";
-    private String northYMax="51459.265091863504";
+    private String northXMin = "12743.895004656708";
+    private String northYMin = "42974.73372280078";
+    private String northXMax = "40261.294039454726";
+    private String northYMax = "51459.265091863504";
 
-    private String southXMin="14673.934798069631";
-    private String southYMin="26903.808314283306";
-    private String southXMax="42191.33383286765";
-    private String southYMax="36534.89797646261";
+    private String southXMin = "14673.934798069631";
+    private String southYMin = "26903.808314283306";
+    private String southXMax = "42191.33383286765";
+    private String southYMax = "36534.89797646261";
 
-    private String eastXMin="24992.95943611888";
-    private String eastYMin="32254.413682160706";
-    private String eastXMax="52510.35847091689";
-    private String eastYMax="43089.38955211242";
+    private String eastXMin = "24992.95943611888";
+    private String eastYMin = "32254.413682160706";
+    private String eastXMax = "52510.35847091689";
+    private String eastYMax = "43089.38955211242";
 
-    private String westXMin="-33022.89019558045";
-    private String westYMin="29598.22030310727";
-    private String westXMax="22011.90787401574";
-    private String WestYMax="49204.367115400906";
+    private String westXMin = "-33022.89019558045";
+    private String westYMin = "29598.22030310727";
+    private String westXMax = "22011.90787401574";
+    private String WestYMax = "49204.367115400906";
 
 
     final MapOptions mOceansBasemap = new MapOptions(MapOptions.MapType.OCEANS);
@@ -121,6 +112,9 @@ public class BaseActivity extends Activity {
     private ViewGroup resultFrame;
     private Callout _callout;
 
+    private boolean forDirection=false;
+    private double directionXTo;
+    private double directionYTo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,6 +123,7 @@ public class BaseActivity extends Activity {
 
         result = (ListView) findViewById(R.id.addressResultList);
         resultFrame = (ViewGroup) findViewById(R.id.resultFrame);
+        message = (TextView) findViewById(R.id.message);
 
         mMapView = (MapView) findViewById(R.id.map);
         ArcGISRuntime.setClientId("j9r0J2JIy8FFFfB8");
@@ -137,9 +132,14 @@ public class BaseActivity extends Activity {
         // Set a listener for map status changes; this will be called when switching basemaps.
         mMapView.setOnStatusChangedListener(new OnStatusChangedListener() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public void onStatusChanged(Object source, STATUS status) {
-                if (STATUS.LAYER_LOADED == status) {mMapView.setExtent(mCurrentMapExtent);}}});
+                if (STATUS.LAYER_LOADED == status) {
+                    mMapView.setExtent(mCurrentMapExtent);
+                }
+            }
+        });
         ls = mMapView.getLocationDisplayManager();
         ls.start();
         result.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -186,10 +186,10 @@ public class BaseActivity extends Activity {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                forDirection=false;
                 BaseActivity.addresses = null;
-                addressSet=1;
-                searchQuery=query;
+                addressSet = 1;
+                searchQuery = query;
                 GetAddressSearchRequest searchRequest = new GetAddressSearchRequest(searchQuery, addressSet);
                 new BackgroundTask().execute(searchRequest, searchRequest);
                 return false;
@@ -212,21 +212,20 @@ public class BaseActivity extends Activity {
         mCurrentMapExtent = mMapView.getExtent();
         switch (item.getItemId()) {
             case R.id.menu_all:
-                if(selectAll.isChecked())
+                if (selectAll.isChecked())
                     selectAll.setChecked(false);
-                else{
-                    if(graphicsLayer!=null)
+                else {
+                    if (graphicsLayer != null)
                         graphicsLayer.removeAll();
-                    selectAll.setChecked(true);
                     GetChasRequest searchRequest = new GetChasRequest(wholeXMin, wholeYMin, wholeXMax, wholeYMax);
                     new GetLayersBackgroundTask().execute(searchRequest, searchRequest);
                 }
                 return true;
             case R.id.menu_east:
-                if(selectEast.isChecked())
+                if (selectEast.isChecked())
                     selectEast.setChecked(false);
-                else{
-                    if(graphicsLayer!=null)
+                else {
+                    if (graphicsLayer != null)
                         graphicsLayer.removeAll();
                     selectAll.setChecked(false);
                     selectEast.setChecked(true);
@@ -236,10 +235,10 @@ public class BaseActivity extends Activity {
 
                 return true;
             case R.id.menu_north:
-                if(selectNorth.isChecked())
+                if (selectNorth.isChecked())
                     selectNorth.setChecked(false);
-                else{
-                    if(graphicsLayer!=null)
+                else {
+                    if (graphicsLayer != null)
                         graphicsLayer.removeAll();
                     selectAll.setChecked(false);
                     selectNorth.setChecked(true);
@@ -249,10 +248,10 @@ public class BaseActivity extends Activity {
 
                 return true;
             case R.id.menu_south:
-                if(selectSouth.isChecked())
+                if (selectSouth.isChecked())
                     selectSouth.setChecked(false);
-                else{
-                    if(graphicsLayer!=null)
+                else {
+                    if (graphicsLayer != null)
                         graphicsLayer.removeAll();
                     selectAll.setChecked(false);
                     selectSouth.setChecked(true);
@@ -262,10 +261,10 @@ public class BaseActivity extends Activity {
 
                 return true;
             case R.id.menu_west:
-                if(selectWest.isChecked())
+                if (selectWest.isChecked())
                     selectWest.setChecked(false);
-                else{
-                    if(graphicsLayer!=null)
+                else {
+                    if (graphicsLayer != null)
                         graphicsLayer.removeAll();
                     selectAll.setChecked(false);
                     selectWest.setChecked(true);
@@ -281,11 +280,32 @@ public class BaseActivity extends Activity {
 
     //Displays the resut of the address search
     public void displayResult() {
+        findViewById(R.id.direction_frame).setVisibility(View.GONE);
         resultFrame.setVisibility(View.VISIBLE);
         AddressAdapter adapter = new AddressAdapter(getBaseContext(), R.layout.address_list_layout, BaseActivity.addresses);
         InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         result.setAdapter(adapter);
+        if(forDirection)
+        {
+            result.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    getDirection(addresses.get(position));
+                }
+            });
+        }
+        else
+        {
+            result.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    mMapView.zoomTo(new Point(addresses.get(position).getX(), addresses.get(position).getY()), 1);
+                    getLayersAroundSelectedLocation(addresses.get(position).getX(), addresses.get(position).getY(), position);
+                }
+            });
+        }
+
         findViewById(R.id.resultFrame).setVisibility(View.VISIBLE);
 
     }
@@ -300,141 +320,123 @@ public class BaseActivity extends Activity {
     public void initMapListeners() {
         ls.setLocationListener(new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {}
+            public void onLocationChanged(Location location) {
+            }
+
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
             @Override
-            public void onProviderEnabled(String provider) {}
+            public void onProviderEnabled(String provider) {
+            }
+
             @Override
-            public void onProviderDisabled(String provider) {}
+            public void onProviderDisabled(String provider) {
+            }
         });
 
         mMapView.setOnLongPressListener(new OnLongPressListener() {
             @Override
             public boolean onLongPress(float v, float v2) {
-                Toast.makeText(getBaseContext(),v+" "+v2,Toast.LENGTH_LONG).show();
+                Point p = mMapView.toMapPoint(new Point(v, v2));
+                PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.location_icon));
+                Graphic graphic = new Graphic(mMapView.toMapPoint(new Point(v, v2)), icon);
+                Log.i("ON TOUCH", Double.toString(p.getX()));
+
+                getLayersAroundSelectedLocation(p.getX(), p.getY(), -1);
+                if (graphicsLayer == null) graphicsLayer = new GraphicsLayer();
+                graphicsLayer.addGraphic(graphic);
+//                mMapView.addLayer(graphicsLayer);
                 return false;
             }
         });
         mMapView.setOnPinchListener(new OnPinchListener() {
             @Override
-            public void prePointersMove(float v, float v2, float v3, float v4, double v5) {}
+            public void prePointersMove(float v, float v2, float v3, float v4, double v5) {
+            }
+
             @Override
             public void postPointersMove(float v, float v2, float v3, float v4, double v5) {
             }
+
             @Override
-            public void prePointersDown(float v, float v2, float v3, float v4, double v5) {}
+            public void prePointersDown(float v, float v2, float v3, float v4, double v5) {
+            }
+
             @Override
             public void postPointersDown(float v, float v2, float v3, float v4, double v5) {
             }
+
             @Override
-            public void prePointersUp(float v, float v2, float v3, float v4, double v5) {}
+            public void prePointersUp(float v, float v2, float v3, float v4, double v5) {
+            }
+
             @Override
-            public void postPointersUp(float v, float v2, float v3, float v4, double v5) {}
+            public void postPointersUp(float v, float v2, float v3, float v4, double v5) {
+            }
         });
 
 
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
 
             public void onSingleTap(float x, float y) {
-                if(graphicsLayer!=null){
-                    if(_callout != null){
+                if (graphicsLayer != null) {
+                    if (_callout != null) {
                         _callout.hide();
-                    }
-                    else
-                    {
+                    } else {
                         _callout = mMapView.getCallout();
                         _callout.setStyle(R.xml.callout_style);
                     }
 
-                    Graphic graphic = findClosestGraphic(x, y, graphicsLayer ,25);
-                    if(graphic == null){}
-                    else{
+                    Graphic graphic = findClosestGraphic(x, y, graphicsLayer, 25);
+                    if (graphic == null) {
+                    } else {
                         String message = "";
-                        double xLocation=0.0;
-                        double yLocation=0.0;
-                        for(int i=0;i<BaseActivity.chases.size();i++){
-                            if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.chases.get(i).hashCode)) {
-                                message = BaseActivity.chases.get(i).getTitle() + "\n" + BaseActivity.chases.get(i).getDescription() + "\n" + BaseActivity.chases.get(i).getAddress();
-                                xLocation=BaseActivity.chases.get(i).getX();
-                                yLocation=BaseActivity.chases.get(i).getY();
-                            }
-                        }
-                        if(selectNorth.isChecked()){
-                            if(BaseActivity.brestCentres!=null){
-                                for(int i=0;i<BaseActivity.brestCentres.size();i++){
-                                    if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.brestCentres.get(i).hashCode)) {
-                                        message = BaseActivity.brestCentres.get(i).getName();
-                                        xLocation=BaseActivity.brestCentres.get(i).getX();
-                                        yLocation=BaseActivity.brestCentres.get(i).getY();
-                                    }
+                        double xLocation = 0.0;
+                        double yLocation = 0.0;
+                        for (int i = 0; i < BaseActivity.chases.size(); i++) {
+                            try {
+                                if ((((Point) graphic.getGeometry()).hashCode()) == (BaseActivity.chases.get(i).hashCode)) {
+                                    message = BaseActivity.chases.get(i).getTitle() + "\n" + BaseActivity.chases.get(i).getDescription() + "\n" + BaseActivity.chases.get(i).getAddress();
+                                    xLocation = BaseActivity.chases.get(i).getX();
+                                    yLocation = BaseActivity.chases.get(i).getY();
                                 }
-                            }
-                        }
-                        if(selectEast.isChecked()){
-                            if(BaseActivity.cervicalCentres!=null){
-                                for(int i=0;i<BaseActivity.cervicalCentres.size();i++){
-                                    if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.cervicalCentres.get(i).hashCode)) {
-                                        message = BaseActivity.cervicalCentres.get(i).getName();
-                                        xLocation=BaseActivity.cervicalCentres.get(i).getX();
-                                        yLocation=BaseActivity.cervicalCentres.get(i).getY();
-                                    }
-                                }
-                            }
-                        }
+                                Point location = (Point) graphic.getGeometry();
 
-                        if(selectSouth.isChecked()){
-                            if(BaseActivity.quitCentres!=null){
-                                for(int i=0;i<BaseActivity.quitCentres.size();i++){
-                                    if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.quitCentres.get(i).hashCode)) {
-                                        message = BaseActivity.quitCentres.get(i).getName();
-                                        xLocation=BaseActivity.quitCentres.get(i).getX();
-                                        yLocation=BaseActivity.quitCentres.get(i).getY();
-                                    }
-                                }
+                                _callout.setOffset(0, -15);
+
+                                _callout.setMaxWidth(1000);
+                                _callout.setMaxHeight(500);
+                                _callout.show(location, message(message, xLocation, yLocation));
                             }
-                        }
-                        if(addresses!=null){
-                            for(int i=0;i<BaseActivity.addresses.size();i++){
-                                if((((Point)graphic.getGeometry()).hashCode())==(BaseActivity.addresses.get(i).hashCode)) {
-                                    message = BaseActivity.addresses.get(i).getTitle();
-                                    xLocation=BaseActivity.addresses.get(i).getX();
-                                    yLocation=BaseActivity.addresses.get(i).getY();
-                                }
-                            }
+                            catch (Exception e){}
+
+
                         }
 
 
-                        Point location = (Point) graphic.getGeometry();
 
-                        _callout.setOffset(0, -15);
-
-                        _callout.setMaxWidth(1000);
-                        _callout.setMaxHeight(500);
-                        _callout.show(location, message(message,xLocation,yLocation));
                     }
                 }
             }
         });
 
 
-
     }
 
     private TextView message(String text, final double x, double y) {
         final TextView msg = new TextView(this);
-        final double xLocation =x;
-        final double yLocation =y;
+        directionXTo = x;
+        directionYTo = y;
 
         msg.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(isGPSoN())
-                { Toast.makeText(getBaseContext(),"Please on Location Service GPS",Toast.LENGTH_SHORT).show();}
-                else{
-                    GetDirectionRequest directionRequest = new GetDirectionRequest(ls.getPoint().getX(), ls.getPoint().getY(),xLocation,yLocation);
-                    new GetDirectionBackgroundTask().execute(directionRequest, directionRequest);
-                }
+                LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                FrameLayout myRoot = (FrameLayout) findViewById(R.id.direction_frame);
+                View itemView = inflater.inflate(R.layout.layout_direction, myRoot);
+                findViewById(R.id.direction_frame).setVisibility(View.VISIBLE);
                 return false;
             }
         });
@@ -444,7 +446,7 @@ public class BaseActivity extends Activity {
         return msg;
     }
 
-    public Graphic findClosestGraphic(float x, float y, GraphicsLayer graphicsLayer,int tolerance){
+    public Graphic findClosestGraphic(float x, float y, GraphicsLayer graphicsLayer, int tolerance) {
         Graphic graphic = null;
         int[] graphicIDs = graphicsLayer.getGraphicIDs(x, y, tolerance);
         if (graphicIDs != null && graphicIDs.length > 0) {
@@ -453,87 +455,64 @@ public class BaseActivity extends Activity {
         return graphic;
     }
 
-    public double[] getExtent(double x, double y)
-    {
+    public double[] getExtent(double x, double y) {
         Envelope env = new Envelope(mMapView.toMapPoint((float) x, (float) y), 100 * mMapView.getResolution(), 100 * mMapView.getResolution());
         double[] extent = new double[4];
-        extent[0] = x-1000;
-        extent[1] = y-1000;
-        extent[2] = x+1000;
-        extent[3] = y+1000;
+        extent[0] = x - 1000;
+        extent[1] = y - 1000;
+        extent[2] = x + 1000;
+        extent[3] = y + 1000;
 
         return extent;
     }
 
-    public void getLayersAroundSelectedLocation(double x, double y,int i) {
+    public void getLayersAroundSelectedLocation(double x, double y, int i) {
         double[] extent = getExtent(x, y);
-        if(graphicsLayer!=null)
+        if (graphicsLayer != null)
             graphicsLayer.removeAll();
-        plotLocation(x,y,i);
+        plotLocation(x, y, i);
         GetChasRequest searchRequest = new GetChasRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
         new GetLayersBackgroundTask().execute(searchRequest, searchRequest);
     }
 
-    public boolean isGPSoN(){
+    public boolean isGPSoN() {
         LocationManager lm = null;
-        boolean gps_enabled=false;
-        if(lm==null)
+        boolean gps_enabled = false;
+        if (lm == null)
             lm = (LocationManager) getBaseContext().getSystemService(getBaseContext().LOCATION_SERVICE);
-        try{
+        try {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        }catch(Exception ex){
-            gps_enabled=false;
+        } catch (Exception ex) {
+            gps_enabled = false;
         }
-        if(!gps_enabled){
+        if (!gps_enabled) {
             return true;
-        }
-        else
+        } else
             return false;
     }
 
     public void getLayersAroundGPS(View v) {
-        if(graphicsLayer!=null)
+        if (graphicsLayer != null)
             graphicsLayer.removeAll();
-        if(isGPSoN()){
-            Toast.makeText(getBaseContext(),"Please on Location Service GPS",Toast.LENGTH_SHORT).show();
-        }
-        else{
-//            Toast.makeText(getBaseContext(),"Cuurrent location"+ ls.getPoint().getX()+" , "+ ls.getPoint().getY(),Toast.LENGTH_LONG).show();
-
+        if (isGPSoN()) {
+            Toast.makeText(getBaseContext(), "Please on Location Service GPS", Toast.LENGTH_SHORT).show();
+        } else {
             double[] extent = getExtent(ls.getPoint().getX(), ls.getPoint().getY());
-
             GetChasRequest searchRequest = new GetChasRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
             new GetLayersBackgroundTask().execute(searchRequest, searchRequest);
-
-            if(selectNorth.isChecked()){
-                GetBreastCentre searchRequest2 = new GetBreastCentre(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
-                new GetLayersBackgroundTask().execute(searchRequest2, searchRequest2);
-            }
-            if(selectEast.isChecked()){
-                GetCervicalCentreRequest searchRequest3 = new GetCervicalCentreRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
-                new GetLayersBackgroundTask().execute(searchRequest3, searchRequest3);
-            }
-            if(selectSouth.isChecked()){
-                GetQuitCenterRequest searchRequest4 = new GetQuitCenterRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
-                new GetLayersBackgroundTask().execute(searchRequest4, searchRequest4);
-            }
-
-            if(selectWest.isChecked()){
-                GetRetailPharmacyRequest searchRequest5 = new GetRetailPharmacyRequest(Double.toString(extent[0]), Double.toString(extent[1]), Double.toString(extent[2]), Double.toString(extent[3]));
-                new GetLayersBackgroundTask().execute(searchRequest5, searchRequest5);
-            }
         }
 
 
     }
 
     //Plot the selected location
-    public void plotLocation(double x, double y,int i){
-        if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+    public void plotLocation(double x, double y, int i) {
+        if (graphicsLayer == null) graphicsLayer = new GraphicsLayer();
         PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.location_icon));
         PopupContainer popupContainer = new PopupContainer(mMapView);
-        Graphic graphic = new Graphic(new Point(x,y), icon);
-        BaseActivity.addresses.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
+        Graphic graphic = new Graphic(new Point(x, y), icon);
+        if (i != -1)
+            BaseActivity.addresses.get(i).hashCode = ((Point) graphic.getGeometry()).hashCode();
         graphicsLayer.addGraphic(graphic);
         mMapView.addLayer(graphicsLayer);
     }
@@ -541,16 +520,19 @@ public class BaseActivity extends Activity {
     //Plots chas layers on map
     public void plotChasCentres() {
 
-        if(BaseActivity.chases!=null){
-            if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
+        if (BaseActivity.chases != null) {
+            if (graphicsLayer == null) graphicsLayer = new GraphicsLayer();
+            if (BaseActivity.chases.size() == 0 || BaseActivity.chases == null) {
+                Toast.makeText(getBaseContext(), "No results found", Toast.LENGTH_SHORT).show();
+            }
             for (int i = 0; i < BaseActivity.chases.size(); i++) {
                 PictureMarkerSymbol icon = new PictureMarkerSymbol(getBaseContext(), getResources().getDrawable(R.drawable.chas_logo));
                 PopupContainer popupContainer = new PopupContainer(mMapView);
-                Point p= new Point();
+                Point p = new Point();
 
                 Graphic graphic = new Graphic(new Point(BaseActivity.chases.get(i).getX(), BaseActivity.chases.get(i).getY()), icon);
 
-                BaseActivity.chases.get(i).hashCode=((Point)graphic.getGeometry()).hashCode();
+                BaseActivity.chases.get(i).hashCode = ((Point) graphic.getGeometry()).hashCode();
                 //Popup popup = graphicsLayer.createPopup(mMapView, 0, graphic);
                 //popupContainer.addPopup(popup);
                 graphicsLayer.addGraphic(graphic);
@@ -562,20 +544,92 @@ public class BaseActivity extends Activity {
     }
 
     public void ploDirectionPoints() {
-        if(BaseActivity.directions!=null){
-            if(graphicsLayer==null)graphicsLayer= new GraphicsLayer();
-            Polyline line= new Polyline();
+        Log.i("plotting direction","dsads");
+        if (BaseActivity.directions != null) {
+            if (graphicsLayer == null) graphicsLayer = new GraphicsLayer();
+            Polyline line = new Polyline();
 
-            line.startPath(BaseActivity.directions.get(0).getX(),BaseActivity.directions.get(0).getY());
+            line.startPath(BaseActivity.directions.get(0).getX(), BaseActivity.directions.get(0).getY());
             for (int i = 1; i < BaseActivity.directions.size(); i++) {
 //                Log.i("ploting x"+i,BaseActivity.directions.get(i).getX()+"");
 //                Log.i("ploting Y"+i,BaseActivity.directions.get(i).getY()+"");
                 line.lineTo(BaseActivity.directions.get(i).getX(), BaseActivity.directions.get(i).getY());
             }
-            graphicsLayer.addGraphic(new Graphic(line,new SimpleFillSymbol(Color.RED)));
+            graphicsLayer.addGraphic(new Graphic(line, new SimpleFillSymbol(Color.RED)));
             mMapView.addLayer(graphicsLayer);
         }
     }
+
+    public void changeTab2(View v) {
+        findViewById(R.id.tab1).setVisibility(View.GONE);
+        findViewById(R.id.tab2).setVisibility(View.VISIBLE);
+    }
+
+    public void changeTab1(View v) {
+        findViewById(R.id.tab1).setVisibility(View.VISIBLE);
+        findViewById(R.id.tab2).setVisibility(View.GONE);
+
+    }
+
+
+    public void findStartPoint(View v) {
+        forDirection=true;
+        BaseActivity.addresses = null;
+        addressSet = 1;
+        searchQuery = ((EditText) findViewById(R.id.direction_query)).getText().toString();
+        GetAddressSearchRequest searchRequest = new GetAddressSearchRequest(searchQuery, addressSet);
+        new BackgroundTask().execute(searchRequest,searchRequest);
+    }
+
+
+
+    public void getDirection(Address address) {
+
+        findViewById(R.id.resultFrame).setVisibility(View.GONE);
+
+        EditText starttingPointET = (EditText) findViewById(R.id.direction_query);
+        String query = starttingPointET.getText().toString();
+
+        RadioGroup selectedVehicleMode = (RadioGroup) findViewById(R.id.transport_type);
+        RadioGroup selectedWay = (RadioGroup) findViewById(R.id.selected_way);
+        RadioGroup selectedWay2 = (RadioGroup) findViewById(R.id.selected_way2);
+
+        GetDirectionRequest request;
+
+        if (findViewById(R.id.tab1).getVisibility() == View.VISIBLE) {
+            Toast.makeText(getBaseContext(),"Getting transport direction..",Toast.LENGTH_LONG).show();
+
+            int selectedVehicle = selectedVehicleMode.getCheckedRadioButtonId();
+            RadioButton temp = (RadioButton) findViewById(selectedVehicle);
+
+
+            int selectedType = selectedWay.getCheckedRadioButtonId();
+            RadioButton temp2 = (RadioButton) findViewById(selectedType);
+
+            request= new GetDirectionRequest(address.getX(),address.getY(),directionXTo,directionYTo,temp.getTag().toString(),0,temp2.getTag().toString());
+
+        } else {
+            Toast.makeText(getBaseContext(),"Getting driving directions..",Toast.LENGTH_LONG).show();
+
+            CheckBox box = (CheckBox) findViewById(R.id.avoid_erp);
+            int avoidERP=-1;
+            if(box.isChecked())
+                avoidERP=0;
+            else
+                avoidERP=1;
+
+            int selectedType = selectedWay2.getCheckedRadioButtonId();
+            RadioButton temp = (RadioButton) findViewById(selectedType);
+
+            request= new GetDirectionRequest(address.getX(),address.getY(),directionXTo,directionYTo,"DRIVE",avoidERP,temp.getTag().toString());
+        }
+
+
+        new GetDirectionBackgroundTask().execute(request,request);
+
+
+    }
+
 
     protected void onPause() {
         super.onPause();
@@ -587,29 +641,20 @@ public class BaseActivity extends Activity {
         mMapView.unpause();
     }
 
+    //use for get chas api
     private class GetLayersBackgroundTask extends AsyncTask<Runnable, Integer, Long> {
         @Override
         protected void onPostExecute(Long result) {
             resultFrame.setVisibility(View.GONE);
             plotChasCentres();
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(getBaseContext(),"Retrieving a CHAS near you.",Toast.LENGTH_LONG);
+            Toast.makeText(getBaseContext(), "Retrieving a CHAS near you.", Toast.LENGTH_LONG);
         }
-        @Override
-        protected Long doInBackground(Runnable... task) {
-                task[0].run();
-            return null;
-        }
-    }
 
-    private class GetDirectionBackgroundTask extends AsyncTask<Runnable, Integer, Long> {
-        @Override
-        protected void onPostExecute(Long result) {ploDirectionPoints();}
-        @Override
-        protected void onPreExecute() {super.onPreExecute();}
         @Override
         protected Long doInBackground(Runnable... task) {
             task[0].run();
@@ -617,13 +662,32 @@ public class BaseActivity extends Activity {
         }
     }
 
-    // used for async task for address search only!!
+    //used for get direction api
+    private class GetDirectionBackgroundTask extends AsyncTask<Runnable, Integer, Long> {
+        @Override
+        protected void onPostExecute(Long result) {
+            ploDirectionPoints();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Long doInBackground(Runnable... task) {
+            task[0].run();
+            return null;
+        }
+    }
+
+    // use for address search api
     private class BackgroundTask extends AsyncTask<Runnable, Integer, Long> {
         @Override
         protected void onPostExecute(Long result) {
             if (!BaseActivity.addressEnd) {
                 addressSet++;
-                Log.i("address search","still searching");
+                Log.i("address search", "still searching");
                 GetAddressSearchRequest searchRequest = new GetAddressSearchRequest(searchQuery, addressSet);
                 new BackgroundTask().execute(searchRequest, searchRequest);
             } else {
@@ -637,10 +701,12 @@ public class BaseActivity extends Activity {
                 }
             }
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
+
         @Override
         protected Long doInBackground(Runnable... task) {
             task[0].run();
@@ -648,8 +714,4 @@ public class BaseActivity extends Activity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        findViewById(R.id.resultFrame).setVisibility(View.GONE);
-    }
 }
